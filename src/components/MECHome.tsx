@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowDownRight, ArrowRight, ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, Heart, Menu, Search, ShoppingBag, X } from "lucide-react";
-import { products, sports } from "@/data/catalog";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import { products, sports, type CatalogItem } from "@/data/catalog";
 
 const campaignImages = [
   { image: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&w=1400&q=85", title: "Northside FC", meta: "Football / 2025 match kit" },
@@ -17,14 +17,29 @@ const buildStages = [
   { index: "03", title: "Precision finish", copy: "Reinforced seams and integrated graphics, built to stay sharp under pressure." },
 ];
 
-export default function MECHome() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [sportsOpen, setSportsOpen] = useState(false);
-  const [activeStage, setActiveStage] = useState(0);
-  const [color, setColor] = useState("#e2ef28");
+function ProductCard({ product }: { product: CatalogItem }) {
   const [saved, setSaved] = useState(false);
+  return (
+    <article className="product-card">
+      <div className="product-image" style={{ backgroundImage: `url(${product.image})` }}>
+        <span className="product-badge">{product.badge}</span>
+        <button aria-label={`Save ${product.name}`} onClick={() => setSaved(!saved)} className={saved ? "active-icon" : ""}>
+          <Heart size={18} fill={saved ? "currentColor" : "none"} />
+        </button>
+      </div>
+      <div className="product-meta">
+        <div>
+          <h3>{product.name}</h3>
+          <span>{product.category}</span>
+        </div>
+        <strong>{product.price}</strong>
+      </div>
+    </article>
+  );
+}
+
+export default function MECHome() {
+  const [activeStage, setActiveStage] = useState(0);
   const campaignRailRef = useRef<HTMLDivElement>(null);
   const sportRailRef = useRef<HTMLDivElement>(null);
 
@@ -32,44 +47,229 @@ export default function MECHome() {
     rail.current?.scrollBy({ left: direction * Math.min(560, rail.current.clientWidth * 0.78), behavior: "smooth" });
   };
 
-  useEffect(() => {
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") { setMenuOpen(false); setSearchOpen(false); setCartOpen(false); }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, []);
-
   return (
     <main>
-      <header className="site-header">
-        <div className="utility-bar"><span>EVEREST ATHLETICS <i /> CREST STUDIO</span><nav><a href="#story">Journal</a><a href="#footer">Sign in</a></nav></div>
-        <div className="main-nav"><button className="mobile-menu-trigger" aria-label="Open menu" onClick={() => setMenuOpen(true)}><Menu size={20} /></button><Link className="brand-mark" href="/" aria-label="Mount Everest Crest home"><span className="crest">M</span><span>MOUNT EVEREST<br /><b>CREST</b></span></Link><nav className="desktop-links"><Link href="/new-featured">New & featured</Link><div className="sports-menu"><button aria-expanded={sportsOpen} onClick={() => setSportsOpen(!sportsOpen)}>Sports <ChevronDown size={14} /></button>{sportsOpen && <div className="sports-dropdown"><span className="eyebrow">Choose your arena</span>{sports.map((sport) => <Link href="/sports" key={sport.name} onClick={() => setSportsOpen(false)}>{sport.name}<ArrowRight size={14} /></Link>)}<Link className="dropdown-all" href="/sports" onClick={() => setSportsOpen(false)}>View all sports <ArrowUpRight size={15} /></Link></div>}</div><Link href="#customize">Customize</Link><Link href="/collection">The collection</Link></nav><div className="nav-actions"><button aria-label="Search" onClick={() => setSearchOpen(true)}><Search size={19} /></button><button aria-label="Favorites" onClick={() => setSaved(!saved)} className={saved ? "active-icon" : ""}><Heart size={19} fill={saved ? "currentColor" : "none"} /></button><button aria-label="Shopping bag" onClick={() => setCartOpen(true)}><ShoppingBag size={19} /><sup>0</sup></button></div></div>
-      </header>
+      <section className="hero" id="top">
+        <div className="hero-image" role="img" aria-label="Football player in a dark performance kit" />
+        <div className="hero-shade" />
+        <div className="hero-content">
+          <span className="eyebrow light">MEC / 001 - THE ASCENT</span>
+          <h1>
+            Climb
+            <br />
+            <em>to the top.</em>
+          </h1>
+          <p>Custom performance apparel for teams that expect more of themselves.</p>
+          <div className="hero-actions">
+            <a className="button button-lime" href="#sports">
+              Explore sports <ArrowRight size={17} />
+            </a>
+            <Link className="text-link light-link" href="/customize">
+              Start customizing <ArrowDownRight size={17} />
+            </Link>
+          </div>
+        </div>
+        <div className="hero-foot">
+          <span>Mount Everest Crest</span>
+          <span>01 / 04</span>
+          <span className="scroll-note">
+            Scroll to ascend <ArrowDownRight size={15} />
+          </span>
+        </div>
+      </section>
 
-      {menuOpen && <div className="mobile-panel"><div className="panel-head"><span className="eyebrow">Explore MEC</span><button aria-label="Close menu" onClick={() => setMenuOpen(false)}><X size={22} /></button></div><nav><Link href="/new-featured" onClick={() => setMenuOpen(false)}>New & featured<ArrowRight size={18} /></Link><Link href="/sports" onClick={() => setMenuOpen(false)}>Sports<ArrowRight size={18} /></Link><Link href="#customize" onClick={() => setMenuOpen(false)}>Customize<ArrowRight size={18} /></Link><Link href="/collection" onClick={() => setMenuOpen(false)}>The collection<ArrowRight size={18} /></Link></nav><div className="panel-foot">Help & support <span>Join MEC</span></div></div>}
+      <section className="campaign section-dark" id="story">
+        <div className="section-intro">
+          <div>
+            <span className="eyebrow lime">The standard is higher</span>
+            <h2>
+              Made for the
+              <br />
+              <em>whole story.</em>
+            </h2>
+          </div>
+          <p>From first sketch to final whistle, every MEC piece carries the identity of the team wearing it.</p>
+        </div>
+        <div className="campaign-rail" ref={campaignRailRef}>
+          {campaignImages.map((item) => (
+            <article className="campaign-card" key={item.title}>
+              <div className="campaign-image" style={{ backgroundImage: `url(${item.image})` }} />
+              <div className="campaign-caption">
+                <div>
+                  <h3>{item.title}</h3>
+                  <span>{item.meta}</span>
+                </div>
+                <ArrowUpRight />
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="rail-controls">
+          <span>Drag or use the arrows</span>
+          <div>
+            <button aria-label="Previous campaign" onClick={() => moveRail(campaignRailRef, -1)}>
+              <ChevronLeft size={18} />
+            </button>
+            <button aria-label="Next campaign" onClick={() => moveRail(campaignRailRef, 1)}>
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+      </section>
 
-      {searchOpen && <div className="search-panel"><button className="close-search" aria-label="Close search" onClick={() => setSearchOpen(false)}><X size={22} /></button><span className="eyebrow">Search the collection</span><label><Search size={26} /><input autoFocus placeholder="What are you looking for?" /></label><div className="popular"><span>Popular</span><Link href="/collection">Custom jerseys</Link><Link href="/sports">Football kits</Link><Link href="#customize">Team uniforms</Link><Link href="/collection">Quarter zips</Link></div></div>}
+      <section className="sport-section" id="sports">
+        <div className="section-intro contained">
+          <div>
+            <span className="eyebrow">Choose your arena</span>
+            <h2>
+              Find your
+              <br />
+              <em>game.</em>
+            </h2>
+          </div>
+          <Link className="text-link" href="/sports">
+            Shop all sports <ArrowRight size={17} />
+          </Link>
+        </div>
+        <div className="sport-grid" ref={sportRailRef}>
+          {sports.map((sport, index) => (
+            <Link className={`sport-card sport-${index}`} href="/sports" key={sport.name}>
+              <div className="sport-image" style={{ backgroundImage: `url(${sport.image})` }} />
+              <div className="sport-overlay" />
+              <div className="sport-copy">
+                <span>0{index + 1}</span>
+                <h3>{sport.name}</h3>
+                <p>{sport.detail}</p>
+                <ArrowUpRight size={22} />
+              </div>
+            </Link>
+          ))}
+        </div>
+        <div className="sport-controls">
+          <span>Explore all eight sports</span>
+          <div>
+            <button aria-label="Previous sport" onClick={() => moveRail(sportRailRef, -1)}>
+              <ChevronLeft size={18} />
+            </button>
+            <button aria-label="Next sport" onClick={() => moveRail(sportRailRef, 1)}>
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+      </section>
 
-      {cartOpen && <aside className="cart-drawer"><div className="drawer-head"><div><span className="eyebrow">Your bag</span><h2>Ready when you are.</h2></div><button aria-label="Close bag" onClick={() => setCartOpen(false)}><X size={22} /></button></div><div className="empty-bag"><div className="bag-orbit"><ShoppingBag size={24} /></div><p>Your bag is waiting for its first piece.</p><a href="#products" onClick={() => setCartOpen(false)}>Explore essentials <ArrowRight size={16} /></a></div><div className="drawer-foot"><div><span>Subtotal</span><strong>$0.00</strong></div><button className="button button-dark" disabled>Checkout <ArrowRight size={16} /></button></div></aside>}
+      <section className="deconstruction section-cream" id="customize">
+        <div className="deconstruct-copy">
+          <span className="eyebrow">The MEC method</span>
+          <h2>
+            Built
+            <br />
+            <em>different.</em>
+          </h2>
+          <p>Every detail has a purpose. Explore the anatomy of an MEC jersey and see where your identity takes shape.</p>
+          <div className="stage-list">
+            {buildStages.map((stage, index) => (
+              <button className={activeStage === index ? "selected" : ""} onClick={() => setActiveStage(index)} key={stage.index}>
+                <span>{stage.index}</span>
+                <strong>{stage.title}</strong>
+                <ArrowRight size={16} />
+              </button>
+            ))}
+          </div>
+          <Link className="text-link deconstruct-cta" href="/customize">
+            Explore customization <ArrowRight size={16} />
+          </Link>
+        </div>
+        <div className="jersey-stage">
+          <div className="stage-number">
+            0{activeStage + 1}
+            <span>/03</span>
+          </div>
+          <div className="jersey-shadow" />
+          <div className="jersey-shape" style={{ background: "linear-gradient(135deg, #e2ef28 0%, #b9c517 100%)" }}>
+            <div className="jersey-neck" />
+            <div className="jersey-sleeve sleeve-left" />
+            <div className="jersey-sleeve sleeve-right" />
+            <div className="jersey-mark">MEC</div>
+            <div className="jersey-number">0{activeStage + 7}</div>
+          </div>
+          <div className="stage-caption">
+            <span>
+              {buildStages[activeStage].index} / {buildStages[activeStage].title}
+            </span>
+            <p>{buildStages[activeStage].copy}</p>
+          </div>
+          <div className="stage-progress">
+            <span className="filled" style={{ width: `${((activeStage + 1) / 3) * 100}%` }} />
+          </div>
+        </div>
+      </section>
 
-      <section className="hero" id="top"><div className="hero-image" role="img" aria-label="Football player in a dark performance kit" /><div className="hero-shade" /><div className="hero-content"><span className="eyebrow light">MEC / 001 - THE ASCENT</span><h1>Climb<br /><em>to the top.</em></h1><p>Custom performance apparel for teams that expect more of themselves.</p><div className="hero-actions"><a className="button button-lime" href="#sports">Explore sports <ArrowRight size={17} /></a><a className="text-link light-link" href="#customize">Start customizing <ArrowDownRight size={17} /></a></div></div><div className="hero-foot"><span>Mount Everest Crest</span><span>01 / 04</span><span className="scroll-note">Scroll to ascend <ArrowDownRight size={15} /></span></div></section>
+      <section className="product-section" id="products">
+        <div className="section-intro contained">
+          <div>
+            <span className="eyebrow">The collection</span>
+            <h2>
+              Performance
+              <br />
+              <em>in rotation.</em>
+            </h2>
+          </div>
+          <Link className="text-link" href="/collection">
+            View all pieces <ArrowRight size={17} />
+          </Link>
+        </div>
+        <div className="product-grid">
+          {products.slice(0, 4).map((product) => (
+            <ProductCard product={product} key={product.name} />
+          ))}
+        </div>
+      </section>
 
-      <section className="campaign section-dark" id="story"><div className="section-intro"><div><span className="eyebrow lime">The standard is higher</span><h2>Made for the<br /><em>whole story.</em></h2></div><p>From first sketch to final whistle, every MEC piece carries the identity of the team wearing it.</p></div><div className="campaign-rail" ref={campaignRailRef}>{campaignImages.map((item) => <article className="campaign-card" key={item.title}><div className="campaign-image" style={{ backgroundImage: `url(${item.image})` }} /><div className="campaign-caption"><div><h3>{item.title}</h3><span>{item.meta}</span></div><ArrowUpRight /></div></article>)}</div><div className="rail-controls"><span>Drag or use the arrows</span><div><button aria-label="Previous campaign" onClick={() => moveRail(campaignRailRef, -1)}><ChevronLeft size={18} /></button><button aria-label="Next campaign" onClick={() => moveRail(campaignRailRef, 1)}><ChevronRight size={18} /></button></div></div></section>
+      <section className="teams-banner" id="teams">
+        <div className="teams-image" />
+        <div className="teams-content">
+          <span className="eyebrow light">For the whole roster</span>
+          <h2>
+            One team.
+            <br />
+            <em>One identity.</em>
+          </h2>
+          <p>Design a kit that makes every player feel part of something bigger.</p>
+          <a className="button button-white" href="mailto:teams@mounteverestcrest.com">
+            Request a team quote <ArrowRight size={17} />
+          </a>
+        </div>
+        <span className="banner-coordinates">27°59&apos;16&quot;N / 86°55&apos;31&quot;E</span>
+      </section>
 
-      <section className="sport-section" id="sports"><div className="section-intro contained"><div><span className="eyebrow">Choose your arena</span><h2>Find your<br /><em>game.</em></h2></div><Link className="text-link" href="/sports">Shop all sports <ArrowRight size={17} /></Link></div><div className="sport-grid" ref={sportRailRef}>{sports.map((sport, index) => <Link className={`sport-card sport-${index}`} href="/sports" key={sport.name}><div className="sport-image" style={{ backgroundImage: `url(${sport.image})` }} /><div className="sport-overlay" /><div className="sport-copy"><span>0{index + 1}</span><h3>{sport.name}</h3><p>{sport.detail}</p><ArrowUpRight size={22} /></div></Link>)}</div><div className="sport-controls"><span>Explore all eight sports</span><div><button aria-label="Previous sport" onClick={() => moveRail(sportRailRef, -1)}><ChevronLeft size={18} /></button><button aria-label="Next sport" onClick={() => moveRail(sportRailRef, 1)}><ChevronRight size={18} /></button></div></div></section>
-
-      <section className="deconstruction section-cream" id="customize"><div className="deconstruct-copy"><span className="eyebrow">The MEC method</span><h2>Built<br /><em>different.</em></h2><p>Every detail has a purpose. Explore the anatomy of an MEC jersey and see where your identity takes shape.</p><div className="stage-list">{buildStages.map((stage, index) => <button className={activeStage === index ? "selected" : ""} onClick={() => setActiveStage(index)} key={stage.index}><span>{stage.index}</span><strong>{stage.title}</strong><ArrowRight size={16} /></button>)}</div></div><div className="jersey-stage"><div className="stage-number">0{activeStage + 1}<span>/03</span></div><div className="jersey-shadow" /><div className="jersey-shape" style={{ background: `linear-gradient(135deg, ${color} 0%, #b9c517 100%)` }}><div className="jersey-neck" /><div className="jersey-sleeve sleeve-left" /><div className="jersey-sleeve sleeve-right" /><div className="jersey-mark">MEC</div><div className="jersey-number">0{activeStage + 7}</div></div><div className="stage-caption"><span>{buildStages[activeStage].index} / {buildStages[activeStage].title}</span><p>{buildStages[activeStage].copy}</p></div><div className="stage-progress"><span className="filled" style={{ width: `${((activeStage + 1) / 3) * 100}%` }} /></div></div></section>
-
-      <section className="studio section-dark"><div className="studio-copy"><span className="eyebrow lime">Crest studio / live preview</span><h2>Your team.<br /><em>Your design.</em></h2><p>Start with a point of view. Refine every line, color and detail until the kit feels unmistakably yours.</p><a className="button button-lime" href="#teams">Start designing <ArrowRight size={17} /></a></div><div className="studio-preview"><div className="preview-top"><span>FRONT VIEW</span><button aria-label="Save design" onClick={() => setSaved(!saved)} className={saved ? "active-icon" : ""}><Heart size={18} fill={saved ? "currentColor" : "none"} /></button></div><div className="preview-jersey" style={{ background: color }}><div className="preview-neck" /><div className="preview-logo">MEC</div><div className="preview-number">11</div></div><div className="color-picker"><span>Base color</span><div><button className="swatch swatch-lime" onClick={() => setColor("#e2ef28")} aria-label="Lime" /><button className="swatch swatch-coral" onClick={() => setColor("#e7664e")} aria-label="Coral" /><button className="swatch swatch-ink" onClick={() => setColor("#1e2420")} aria-label="Ink" /><button className="swatch swatch-ice" onClick={() => setColor("#d9e2de")} aria-label="Ice" /></div></div><a className="preview-link" href="#teams">Customize this jersey <ArrowRight size={16} /></a></div></section>
-
-      <section className="product-section" id="products"><div className="section-intro contained"><div><span className="eyebrow">The collection</span><h2>Performance<br /><em>in rotation.</em></h2></div><Link className="text-link" href="/collection">View all pieces <ArrowRight size={17} /></Link></div><div className="product-grid">{products.slice(0, 4).map((product) => <article className="product-card" key={product.name}><div className="product-image" style={{ backgroundImage: `url(${product.image})` }}><span className="product-badge">{product.badge}</span><button aria-label={`Save ${product.name}`} onClick={() => setSaved(!saved)} className={saved ? "active-icon" : ""}><Heart size={18} fill={saved ? "currentColor" : "none"} /></button></div><div className="product-meta"><div><h3>{product.name}</h3><span>{product.category}</span></div><strong>{product.price}</strong></div></article>)}</div></section>
-
-      <section className="teams-banner" id="teams"><div className="teams-image" /><div className="teams-content"><span className="eyebrow light">For the whole roster</span><h2>One team.<br /><em>One identity.</em></h2><p>Design a kit that makes every player feel part of something bigger.</p><a className="button button-white" href="mailto:teams@mounteverestcrest.com">Request a team quote <ArrowRight size={17} /></a></div><span className="banner-coordinates">27°59&apos;16&quot;N / 86°55&apos;31&quot;E</span></section>
-
-      <section className="process-section"><div className="section-intro contained"><div><span className="eyebrow">From idea to game day</span><h2>The summit<br /><em>is earned.</em></h2></div><p>One clear process, shaped around your team and built to move with purpose.</p></div><div className="process-grid">{[["01", "Create", "Choose your sport, silhouette, colors and identity."], ["02", "Refine", "Finalize artwork, sizing and the details that matter."], ["03", "Compete", "Your team receives a unified kit, ready for the moment."]].map(([number, title, copy]) => <div className="process-item" key={number}><span>{number}</span><h3>{title}</h3><p>{copy}</p><ArrowUpRight size={20} /></div>)}</div></section>
-
-      <footer id="footer"><div className="footer-top"><a className="brand-mark footer-brand" href="#top"><span className="crest">M</span><span>MOUNT EVEREST<br /><b>CREST</b></span></a><p>Built for the ascent.<br />Made for your team.</p><div className="footer-cta"><span>Have a team in mind?</span><a href="mailto:teams@mounteverestcrest.com">Talk to MEC <ArrowUpRight size={17} /></a></div></div><div className="footer-links"><div><span>Shop</span><a href="#sports">Football</a><a href="#sports">Soccer</a><a href="#sports">Cricket</a><a href="#sports">Athleisure</a></div><div><span>Customize</span><a href="#customize">Design your jersey</a><a href="#teams">Team orders</a><a href="#teams">Request a quote</a><a href="#customize">Sizing guide</a></div><div><span>Help</span><a href="#footer">Contact</a><a href="#footer">Shipping & returns</a><a href="#footer">Order status</a><a href="#footer">FAQ</a></div><div><span>Follow the ascent</span><a href="#footer">Instagram</a><a href="#footer">Journal</a><a href="#footer">Join MEC</a></div></div><div className="footer-bottom"><span>© 2025 Mount Everest Crest</span><span>Privacy / Terms / Accessibility</span><span>Global / US <ChevronDown size={13} /></span></div></footer>
+      <section className="process-section">
+        <div className="section-intro contained">
+          <div>
+            <span className="eyebrow">From idea to game day</span>
+            <h2>
+              The summit
+              <br />
+              <em>is earned.</em>
+            </h2>
+          </div>
+          <p>One clear process, shaped around your team and built to move with purpose.</p>
+        </div>
+        <div className="process-grid">
+          {[
+            ["01", "Create", "Choose your sport, silhouette, colors and identity."],
+            ["02", "Refine", "Finalize artwork, sizing and the details that matter."],
+            ["03", "Compete", "Your team receives a unified kit, ready for the moment."],
+          ].map(([number, title, copy]) => (
+            <div className="process-item" key={number}>
+              <span>{number}</span>
+              <h3>{title}</h3>
+              <p>{copy}</p>
+              <ArrowUpRight size={20} />
+            </div>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
