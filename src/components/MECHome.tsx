@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowDownRight, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { products, sports, type CatalogItem } from "@/data/catalog";
 
@@ -15,6 +16,14 @@ const buildStages = [
   { index: "01", title: "Performance fabric", copy: "Lightweight moisture-management construction for the moments that decide the match." },
   { index: "02", title: "Your identity", copy: "Color, crest, number and name become one unmistakable team language." },
   { index: "03", title: "Precision finish", copy: "Reinforced seams and integrated graphics, built to stay sharp under pressure." },
+];
+
+// Real production pieces from the bench (see /public/images/from-the-bench)
+// shown per stage instead of a drawn jersey.
+const stagePieces = [
+  { src: "/images/from-the-bench/gaa-navy-red.webp", width: 900, height: 792, alt: "GAA match jersey in navy, red and white", label: "GAA Match Jersey 01 / Navy · Red · White" },
+  { src: "/images/from-the-bench/white-yellow-geometric.webp", width: 900, height: 737, alt: "Match jersey in white, yellow and black with a geometric X", label: "Match Jersey 02 / White · Yellow · Black" },
+  { src: "/images/from-the-bench/strasbourg-front.webp", width: 900, height: 794, alt: "Match jersey with a teal-to-navy gradient", label: "Match Jersey 09 / Teal-to-Navy Gradient" },
 ];
 
 function ProductCard({ product }: { product: CatalogItem }) {
@@ -186,18 +195,13 @@ export default function MECHome() {
             <span>/03</span>
           </div>
           <div className="jersey-shadow" />
-          <div className="jersey-shape" style={{ background: "linear-gradient(135deg, #e2ef28 0%, #b9c517 100%)" }}>
-            <div className="jersey-neck" />
-            <div className="jersey-sleeve sleeve-left" />
-            <div className="jersey-sleeve sleeve-right" />
-            <div className="jersey-mark">MEC</div>
-            <div className="jersey-number">0{activeStage + 7}</div>
-          </div>
+          <Image key={activeStage} className="jersey-photo" src={stagePieces[activeStage].src} alt={stagePieces[activeStage].alt} width={stagePieces[activeStage].width} height={stagePieces[activeStage].height} loading="eager" />
           <div className="stage-caption">
             <span>
               {buildStages[activeStage].index} / {buildStages[activeStage].title}
             </span>
             <p>{buildStages[activeStage].copy}</p>
+            <em>{stagePieces[activeStage].label}</em>
           </div>
           <div className="stage-progress">
             <span className="filled" style={{ width: `${((activeStage + 1) / 3) * 100}%` }} />

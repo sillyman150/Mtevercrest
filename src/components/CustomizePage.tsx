@@ -2,20 +2,25 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowDownRight, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
 import JerseySvg from "@/components/JerseySvg";
+import { benchPieces } from "@/data/archive";
 import {
   applications,
   buildSteps,
   capabilityMatrix,
+  collarColorways,
   collars,
   constructionFeatures,
   customizationExamples,
+  customizationLevels,
   fabrics,
   galleryCategories,
   galleryTechniques,
   garments,
   hoods,
+  levelMatrix,
   patterns,
   placementsBack,
   placementsFront,
@@ -92,15 +97,16 @@ export default function CustomizePage() {
   const update = <K extends keyof typeof design>(key: K, value: (typeof design)[K]) => setDesign((d) => ({ ...d, [key]: value }));
   const setBuildField = <K extends keyof typeof build>(key: K, value: (typeof build)[K]) => setBuild((b) => ({ ...b, [key]: value }));
 
-  const filteredExamples = useMemo(
-    () =>
-      customizationExamples.filter(
-        (example) =>
-          (category === "All" || example.category === category) &&
-          (technique === "All" || example.tags.some((tag) => tag.toLowerCase() === technique.toLowerCase()))
-      ),
-    [category, technique]
-  );
+  const filteredExamples = useMemo(() => {
+    // Real production pieces sit first in the archive, followed by
+    // parametric studies; both flow through the same filters.
+    const allExamples = [...benchPieces, ...customizationExamples];
+    return allExamples.filter(
+      (example) =>
+        (category === "All" || example.category === category) &&
+        (technique === "All" || example.tags.some((tag) => tag.toLowerCase() === technique.toLowerCase()))
+    );
+  }, [category, technique]);
 
   useEffect(() => {
     document.body.style.overflow = lightbox !== null ? "hidden" : "";
@@ -132,7 +138,7 @@ export default function CustomizePage() {
         <span>Customize</span>
       </div>
 
-      {/* 01 — HERO */}
+      {/* 01 · HERO */}
       <section className="cust-hero">
         <div className="cust-hero-art" aria-hidden="true">
           <svg viewBox="0 0 600 620" preserveAspectRatio="xMidYMid meet">
@@ -165,10 +171,55 @@ export default function CustomizePage() {
             </a>
           </div>
         </div>
-        <span className="cust-hero-coords">27°59&apos;16&quot;N / 86°55&apos;31&quot;E — BUILD WITHOUT LIMITS</span>
+        <span className="cust-hero-coords">27°59&apos;16&quot;N / 86°55&apos;31&quot;E · BUILD WITHOUT LIMITS</span>
       </section>
 
-      {/* 02 — LIVE JERSEY PREVIEW */}
+      {/* LEVELS · THREE WAYS UP */}
+      <section className="cust-levels" id="levels">
+        <CustHead
+          index="00"
+          eyebrow="Crest studio / customization levels"
+          title={<>Three<br /><em>ways up.</em></>}
+          copy="One jersey, three levels of build. Every level can be taken further with Crest Studio. These are starting points, not limits."
+        />
+        <div className="level-cards">
+          {customizationLevels.map((level) => (
+            <article className="level-card" key={level.index}>
+              <span className="level-index">Tier {level.index}</span>
+              <h3>{level.name}</h3>
+              <p>{level.tagline}</p>
+              <dl>
+                {level.specs.map(([label, value]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </article>
+          ))}
+        </div>
+        <div className="level-matrix">
+          <div className="level-matrix-head">
+            <span>What each level unlocks</span>
+            <div>
+              {["Base Camp", "Ascent", "Summit"].map((tier) => (
+                <i key={tier}>{tier}</i>
+              ))}
+            </div>
+          </div>
+          {levelMatrix.map((row) => (
+            <div className="level-row" key={row.capability}>
+              <strong>{row.capability}</strong>
+              <span>{row.base}</span>
+              <span>{row.ascent}</span>
+              <span>{row.summit}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 02 · LIVE JERSEY PREVIEW */}
       <section className="studio cust-preview" id="preview">
         <div className="studio-copy">
           <span className="eyebrow lime">Crest studio / live preview</span>
@@ -293,18 +344,18 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 03 — COLOR */}
+      {/* 03 · COLOR */}
       <section className="cust-colors" id="colors">
         <CustHead
           index="01"
           eyebrow="Capability / color"
           title={<>Any color.<br /><em>Any identity.</em></>}
-          copy="Color is essentially unrestricted, subject to production. Match your existing identity or build an entirely new one — from primary body colors to micro-details, trims and graphics, MEC can develop a palette around your team."
+          copy="Color is essentially unrestricted, subject to production. Match your existing identity or build an entirely new one. From primary body colors to micro-details, trims and graphics, MEC can develop a palette around your team."
         />
         <div className="cust-spectrum-wrap">
           <div className="cust-spectrum" style={{ background: `linear-gradient(90deg, ${SPECTRUM.join(",")})` }} />
           <div className="cust-spectrum-note">
-            <span>A snapshot — not a limit.</span>
+            <span>A snapshot, not a limit.</span>
             <span>Palette developed per project</span>
           </div>
         </div>
@@ -315,7 +366,7 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 04 — GARMENT TYPES */}
+      {/* 04 · GARMENT TYPES */}
       <section className="cust-garments" id="garments">
         <CustHead
           index="02"
@@ -340,13 +391,13 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 05 — FABRIC & WEIGHT */}
+      {/* 05 · FABRIC & WEIGHT */}
       <section className="cust-fabric" id="fabric">
         <CustHead
           index="03"
           eyebrow="Capability / material"
           title={<>Choose<br /><em>the feel.</em></>}
-          copy="The hand of the fabric changes the whole garment. MEC works across a range of constructions — each one selected for how it performs."
+          copy="The hand of the fabric changes the whole garment. MEC works across a range of constructions, each one selected for how it performs."
         />
         <div className="fabric-grid">
           {fabrics.map((fabric) => (
@@ -382,13 +433,13 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 06 — SLEEVES */}
+      {/* 06 · SLEEVES */}
       <section className="cust-sleeves" id="sleeves">
         <CustHead
           index="04"
           eyebrow="Capability / construction"
           title={<>Build<br /><em>the silhouette.</em></>}
-          copy="Sleeve length changes how a kit moves — and how it reads from the stands. Choose a cut or spec your own."
+          copy="Sleeve length changes how a kit moves and how it reads from the stands. Choose a cut or spec your own."
         />
         <div className="cust-stage-grid">
           <div className="cust-option-list">
@@ -409,23 +460,45 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 07 — COLLARS */}
+      {/* 07 · COLLARS */}
       <section className="cust-collars" id="collars">
         <CustHead
           index="05"
           eyebrow="Capability / construction"
           title={<>The collar,<br /><em>shaped.</em></>}
-          copy="Shape, color, material and trim — the neckline is where most of a kit&apos;s identity gets close to the player."
+          copy="Shape, color, material and trim. The neckline is where most of a kit&apos;s identity gets close to the player."
         />
         <div className="cust-stage-grid">
-          <div className="cust-option-list">
-            {collars.map((c) => (
-              <button key={c.id} className={design.collar === c.id ? "selected" : ""} onClick={() => update("collar", c.id)}>
-                <span>{c.name}</span>
-                <small>{c.note}</small>
-                <ArrowRight size={16} />
-              </button>
-            ))}
+          <div>
+            <div className="cust-option-list">
+              {collars.map((c) => (
+                <button key={c.id} className={design.collar === c.id ? "selected" : ""} onClick={() => update("collar", c.id)}>
+                  <span>{c.name}</span>
+                  <small>{c.note}</small>
+                  <ArrowRight size={16} />
+                </button>
+              ))}
+            </div>
+            <div className="collar-colorways">
+              <span className="colorway-label">Same polo / four collar colorways</span>
+              <div className="colorway-chips">
+                {collarColorways.map((colorway) => (
+                  <button
+                    key={colorway.id}
+                    className="colorway-chip"
+                    onClick={() => {
+                      update("base", colorway.body);
+                      update("trim", colorway.trim);
+                    }}
+                    aria-label={`Apply ${colorway.name} colorway`}
+                  >
+                    <i style={{ background: colorway.body }} />
+                    <i style={{ background: colorway.trim }} />
+                    <span>{colorway.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           <div className="cust-stage-panel">
             <div key={design.collar} className="cust-stage-figure cust-stage-zoom">
@@ -436,7 +509,7 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 08 — HOODS */}
+      {/* 08 · HOODS */}
       <section className="cust-hoods" id="hoods">
         <CustHead
           index="06"
@@ -457,7 +530,7 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 09 — CONSTRUCTION & STITCHING */}
+      {/* 09 · CONSTRUCTION & STITCHING */}
       <section className="cust-construction" id="construction">
         <CustHead
           index="07"
@@ -493,7 +566,7 @@ export default function CustomizePage() {
         <p className="cust-footnote">Available depending on garment type and production requirements.</p>
       </section>
 
-      {/* 10 — DESIGN APPLICATIONS */}
+      {/* 10 · DESIGN APPLICATIONS */}
       <section className="cust-applications" id="applications">
         <CustHead
           index="08"
@@ -507,14 +580,14 @@ export default function CustomizePage() {
               <div className={`app-visual app-${application.visual}`} />
               <h3>{application.name}</h3>
               <p>{application.description}</p>
-              <span className="app-ideal">Ideal for — {application.ideal}</span>
+              <span className="app-ideal">Ideal for {application.ideal}</span>
             </article>
           ))}
         </div>
         <p className="cust-footnote">Processes shown are those MEC supports. The list lives in one data file, so options can evolve with production.</p>
       </section>
 
-      {/* 11 — LOGOS & PLACEMENT */}
+      {/* 11 · LOGOS & PLACEMENT */}
       <section className="cust-logos" id="logos">
         <CustHead
           index="09"
@@ -558,7 +631,7 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 12 — PLAYER PERSONALIZATION */}
+      {/* 12 · PLAYER PERSONALIZATION */}
       <section className="cust-personalization" id="personalization">
         <CustHead
           index="10"
@@ -579,7 +652,7 @@ export default function CustomizePage() {
             {personalizationFields.slice(2).map((field) => (
               <div className="spec-row" key={field}>
                 <span>{field}</span>
-                <input placeholder="—" />
+                <input />
               </div>
             ))}
           </div>
@@ -600,13 +673,13 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 13 — PATTERNS */}
+      {/* 13 · PATTERNS */}
       <section className="cust-patterns" id="patterns">
         <CustHead
           index="11"
           eyebrow="Capability / artwork"
           title={<>From simple<br /><em>to complex.</em></>}
-          copy="Original pattern families drawn in-house — from clean solids to contour work built on summit elevation data."
+          copy="Original pattern families drawn in-house, from clean solids to contour work built on summit elevation data."
         />
         <div className="pattern-grid">
           {patterns.map((pattern) => (
@@ -618,7 +691,7 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 14 — TEXTURES */}
+      {/* 14 · TEXTURES */}
       <section className="cust-textures" id="textures">
         <CustHead
           index="12"
@@ -636,13 +709,13 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 15 — BUILD-A-GARMENT DEMO */}
+      {/* 15 · BUILD-A-GARMENT DEMO */}
       <section className="cust-builder" id="builder">
         <CustHead
           index="13"
           eyebrow="Crest studio / workflow"
           title={<>Build your kit,<br /><em>step by step.</em></>}
-          copy="A working demonstration of the MEC workflow. Nothing is submitted — the final step hands the spec to Crest Studio."
+          copy="A working demonstration of the MEC workflow. Nothing is submitted. The final step hands the spec to Crest Studio."
         />
         <div className="builder-shell">
           <ol className="builder-steps">
@@ -734,8 +807,8 @@ export default function CustomizePage() {
                     ["Color", SWATCHES.find((s) => s.hex === build.color)?.name],
                     ["Artwork", patterns.find((p) => p.id === build.artwork)?.name],
                     ["Logos", build.logos],
-                    ["Name", build.name || "—"],
-                    ["Number", build.number || "—"],
+                    ["Name", build.name || "Not set"],
+                    ["Number", build.number || "Not set"],
                   ].map(([label, value]) => (
                     <div key={label}>
                       <dt>{label}</dt>
@@ -758,7 +831,7 @@ export default function CustomizePage() {
                 className="cust-stage-svg"
                 ariaLabel="Builder preview"
               />
-              <span>{buildSteps[step].index} / 08 — {buildSteps[step].title}</span>
+              <span>{buildSteps[step].index} / 08 · {buildSteps[step].title}</span>
             </div>
             <div className="builder-nav">
               <button className="builder-back" disabled={step === 0} onClick={() => setStep(step - 1)}>
@@ -778,13 +851,13 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 16 — GALLERY */}
+      {/* 16 · GALLERY */}
       <section className="cust-gallery" id="gallery">
         <CustHead
           index="14"
           eyebrow="Crest studio / archive"
           title={<>What&apos;s<br /><em>possible.</em></>}
-          copy="Studies from the studio bench. The archive is built to hold dozens more as real photography lands."
+          copy="Real production pieces from the bench, photographed in the studio, plus studies from the drawing board. The archive grows as new pieces ship."
         />
         <div className="gallery-filters">
           <div className="gallery-filter-row">
@@ -804,14 +877,16 @@ export default function CustomizePage() {
         </div>
         <div className="gallery-meta-line">
           <span>
-            {filteredExamples.length} {filteredExamples.length === 1 ? "study" : "studies"} shown
+            {filteredExamples.length} {filteredExamples.length === 1 ? "piece" : "pieces"} shown
           </span>
           <span>Archive capacity / 40–60+</span>
         </div>
         <div className="gallery-grid">
           {filteredExamples.map((example, i) => (
             <button className="gallery-card" key={example.id} onClick={() => setLightbox(i)}>
-              {example.design ? (
+              {example.image ? (
+                <Image className="gallery-photo" src={example.image} alt={example.title} width={example.imageWidth ?? 900} height={example.imageHeight ?? 900} loading="lazy" />
+              ) : example.design ? (
                 <JerseySvg
                   base={example.design.base}
                   trim={example.design.trim}
@@ -819,6 +894,7 @@ export default function CustomizePage() {
                   sleeve={example.design.sleeve}
                   collar={example.design.collar}
                   number={example.design.number}
+                  gradientStops={example.design.gradientStops}
                   className="gallery-jersey"
                   ariaLabel={example.title}
                 />
@@ -843,13 +919,13 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 17 — CAPABILITY MATRIX */}
+      {/* 17 · CAPABILITY MATRIX */}
       <section className="cust-matrix" id="matrix">
         <CustHead
           index="15"
           eyebrow="Capability / index"
           title={<>The<br /><em>possibilities.</em></>}
-          copy="One index of everything the studio can shape — the short version of what Crest Studio works through with you."
+          copy="One index of everything the studio can shape. The short version of what Crest Studio works through with you."
         />
         <div className="matrix-grid">
           {capabilityMatrix.map((column) => (
@@ -865,7 +941,7 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 18 — CLOSING CTA */}
+      {/* 18 · CLOSING CTA */}
       <section className="cust-imagine" id="imagine">
         <span className="eyebrow lime">Crest studio / projects</span>
         <h2>
@@ -884,7 +960,7 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 19 — PROJECT BRIEF FORM */}
+      {/* 19 · PROJECT BRIEF FORM */}
       <section className="cust-brief" id="brief">
         <CustHead
           index="16"
@@ -895,7 +971,7 @@ export default function CustomizePage() {
         {submitted ? (
           <div className="brief-confirm">
             <strong>Brief drafted.</strong>
-            <p>This form is a front-end prototype — submissions are not sent anywhere yet. To actually start, send the same details to teams@mounteverestcrest.com.</p>
+            <p>This form is a front-end prototype. Submissions are not sent anywhere yet. To actually start, send the same details to teams@mounteverestcrest.com.</p>
           </div>
         ) : (
           <form className="brief-form" onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}>
@@ -966,7 +1042,7 @@ export default function CustomizePage() {
               </label>
               <label className="brief-wide">
                 What do you want to create? *
-                <textarea required rows={4} placeholder="Silhouettes, colors, crest, names, numbers, references — anything that helps the studio understand the project." />
+                <textarea required rows={4} placeholder="Silhouettes, colors, crest, names, numbers, references, anything that helps the studio understand the project." />
               </label>
               <label className="brief-wide">
                 Upload reference
@@ -976,7 +1052,7 @@ export default function CustomizePage() {
                   onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")}
                 />
                 <span className="file-note">
-                  {fileName ? `Attached: ${fileName} (not uploaded — prototype only)` : "Sketches, existing jerseys, logos, moodboards — not uploaded yet, this is a prototype."}
+                  {fileName ? `Attached: ${fileName} (not uploaded, prototype only)` : "Sketches, existing jerseys, logos, moodboards. Not uploaded yet, this is a prototype."}
                 </span>
               </label>
             </div>
@@ -985,7 +1061,7 @@ export default function CustomizePage() {
                 Start my project <ArrowRight size={16} />
               </button>
               <span className="form-note">
-                Front-end prototype — nothing is sent yet. For a real project, email teams@mounteverestcrest.com.
+                Front-end prototype. Nothing is sent yet. For a real project, email teams@mounteverestcrest.com.
               </span>
             </div>
           </form>
@@ -1009,8 +1085,10 @@ export default function CustomizePage() {
             <ChevronLeft size={26} />
           </button>
           <div className="lightbox-content" onClick={(event) => event.stopPropagation()}>
-            <div className="lightbox-visual">
-              {lightboxExample.design ? (
+            <div className={lightboxExample.image ? "lightbox-visual lightbox-visual-photo" : "lightbox-visual"}>
+              {lightboxExample.image ? (
+                <Image className="lightbox-photo" src={lightboxExample.image} alt={lightboxExample.title} width={lightboxExample.imageWidth ?? 900} height={lightboxExample.imageHeight ?? 900} loading="eager" />
+              ) : lightboxExample.design ? (
                 <JerseySvg
                   base={lightboxExample.design.base}
                   trim={lightboxExample.design.trim}
@@ -1018,6 +1096,7 @@ export default function CustomizePage() {
                   sleeve={lightboxExample.design.sleeve}
                   collar={lightboxExample.design.collar}
                   number={lightboxExample.design.number}
+                  gradientStops={lightboxExample.design.gradientStops}
                   className="lightbox-jersey"
                   ariaLabel={lightboxExample.title}
                 />

@@ -72,7 +72,7 @@ export default function Header() {
   }, []);
 
   // Navigating to another page closes every open surface.
-  // Render-time adjustment (no effect) — React re-renders before committing.
+  // Render-time adjustment (no effect). React re-renders before committing.
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);

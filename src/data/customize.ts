@@ -37,7 +37,7 @@ export const fabrics = [
   { id: "technical-knit", name: "Technical knit", note: "Engineered surfaces for specific needs." },
 ];
 
-// gsmRange stays null until MEC confirms production ranges —
+// gsmRange stays null until MEC confirms production ranges;
 // the UI is built so real numbers can drop straight in.
 export const weightClasses = [
   { id: "light", label: "Lightweight", gsmRange: null as string | null, description: "Designed for breathable competition use." },
@@ -153,6 +153,95 @@ export const buildSteps = [
   { index: "08", title: "Review", key: "review" },
 ];
 
+// ---- Customization levels (Three Ways Up) --------------------------------
+// From the Crest Studio kit mockups: one jersey, three levels of build.
+
+export const customizationLevels = [
+  {
+    index: "01",
+    name: "Base Camp",
+    tagline: "Pick a stock silhouette, set team colors, add your crest and numbers. The fastest route to a clean team kit.",
+    specs: [
+      ["Garment", "Match jersey"],
+      ["Fabric", "Polyester"],
+      ["Pattern", "Solid + trim"],
+      ["Collar", "Crew neck, contrast"],
+      ["Application", "Vinyl / heat"],
+      ["Identity", "Crest + number"],
+    ],
+  },
+  {
+    index: "02",
+    name: "Ascent",
+    tagline: "Unlocks MEC pattern families, gradients, sponsor placement and collar choice, all sublimated into the fabric.",
+    specs: [
+      ["Garment", "Match jersey"],
+      ["Fabric", "Performance polyester"],
+      ["Pattern", "Gradient + topographic"],
+      ["Collar", "V-neck, tipped"],
+      ["Application", "Full sublimation"],
+      ["Identity", "Crest, sponsor, sleeve mark"],
+    ],
+  },
+  {
+    index: "03",
+    name: "Summit",
+    tagline: "Everything open: bespoke artwork, re-cut panels, contrast stitching, embroidered crest, woven labels.",
+    specs: [
+      ["Garment", "Match jersey"],
+      ["Fabric", "Performance polyester + mesh"],
+      ["Pattern", "Custom artwork"],
+      ["Collar", "Polo, double tipped"],
+      ["Application", "Sublimation + embroidery"],
+      ["Construction", "Side panels, contrast stitch"],
+    ],
+  },
+];
+
+export const levelMatrix = [
+  { capability: "Color", base: "Team primary + trim", ascent: "Full palette + gradients", summit: "Unrestricted, incl. pattern overlays" },
+  { capability: "Pattern", base: "Solid", ascent: "MEC families: gradient, topo, stripe, geometric", summit: "Custom artwork drawn per project" },
+  { capability: "Collar", base: "Crew / V-neck", ascent: "+ contrast and rib collars", summit: "+ polo, stand, fully custom collar" },
+  { capability: "Construction", base: "Stock cut", ascent: "Choice of sleeve length", summit: "Custom panels, seams, vents, stitching" },
+  { capability: "Application", base: "Vinyl / heat", ascent: "Sublimation", summit: "Sublimation + embroidery, patches, high-density" },
+  { capability: "Identity", base: "Crest, number", ascent: "+ name, sponsor, sleeve marks", summit: "+ woven labels, custom placement" },
+];
+
+// ---- Gradient series -------------------------------------------------------
+// Six fades from the Crest Studio capability pages. Each entry pairs a
+// three-stop fade with an existing pattern overlay, the way the mockups
+// pair each gradient with an MEC pattern family.
+
+export const gradientPresets: { id: string; name: string; overlay: string; stops: [string, string, string]; description: string }[] = [
+  { id: "glacier", name: "Glacier / Crackle Stone", overlay: "Crackle Stone", stops: ["#2f6d80", "#2b4c6b", "#141c30"], description: "Teal to royal to midnight with a crackle stone overlay." },
+  { id: "ember", name: "Ember / Halftone Fade", overlay: "Halftone Fade", stops: ["#e0a53c", "#d9531e", "#5c1f1f"], description: "Amber to vermilion to oxblood with a halftone fade overlay." },
+  { id: "alpenglow", name: "Alpenglow / Topographic", overlay: "Topographic", stops: ["#e8b4c0", "#c2558f", "#54306e"], description: "Blush to magenta to violet over summit contour lines." },
+  { id: "night-ascent", name: "Night Ascent / Pinstripe", overlay: "Pinstripe", stops: ["#8d9790", "#2b4c6b", "#111511"], description: "Slate to navy to black with a fine pinstripe overlay." },
+  { id: "moss-ridge", name: "Moss Ridge / Pixel Dissolve", overlay: "Pixel Dissolve", stops: ["#c8e04a", "#6d8a3a", "#1f3d1e"], description: "Lime to moss to forest dissolving into a pixel field." },
+  { id: "solar", name: "Solar / Shard Field", overlay: "Shard Field", stops: ["#f4e04d", "#f08a24", "#c2551e"], description: "Lemon to tangerine on a diagonal, over a shard field." },
+];
+
+// Gradient presets mapped onto the parametric pattern system, so each
+// mockup gradient can render as a jersey with its overlay.
+const gradientPattern: Record<string, PatternId> = {
+  glacier: "abstract",
+  ember: "digital",
+  alpenglow: "topographic",
+  "night-ascent": "stripe",
+  "moss-ridge": "digital",
+  solar: "geometric",
+};
+
+// ---- Collar colorways ------------------------------------------------------
+// "Same polo, four collar colorways" from the collar construction page.
+
+export const collarColorways = [
+  { id: "slate-copper", name: "Slate / Copper", body: "#6b7784", trim: "#b87333" },
+  { id: "forest-cream", name: "Forest / Cream", body: "#2f4f2f", trim: "#ece3cf" },
+  { id: "wine-gold", name: "Wine / Gold", body: "#722f37", trim: "#c4b550" },
+  { id: "sky-navy", name: "Sky / Navy", body: "#a8c4dc", trim: "#22344d" },
+];
+
 export const capabilityMatrix = [
   { group: "Garment", items: ["Jerseys", "Tees", "Polos", "Hoodies", "Jackets", "Shorts", "Pants", "Warm-ups", "Sleeveless"] },
   { group: "Construction", items: ["Sleeves", "Panels", "Collars", "Necklines", "Hoods", "Trim", "Seams"] },
@@ -173,6 +262,9 @@ export type ExampleDesign = {
   sleeve: SleeveId;
   collar: CollarId;
   number: string;
+  // Vertical three-stop body fade, used for the gradient series
+  // and the Glacier Rose colorway.
+  gradientStops?: [string, string, string];
 };
 
 export type CustomizationExample = {
@@ -182,8 +274,11 @@ export type CustomizationExample = {
   sport: string;
   material: string;
   application: string;
-  // null until real MEC photography lands — see customizationAssets.ts
+  // null until real MEC photography lands; see customizationAssets.ts
   image: string | null;
+  // Intrinsic dimensions of the delivered photo, for next/image.
+  imageWidth?: number;
+  imageHeight?: number;
   tags: string[];
   description: string;
   design?: ExampleDesign;
@@ -208,4 +303,29 @@ export const customizationExamples: CustomizationExample[] = [
   { id: "vented-tee", title: "Vented Match Tee", category: "Tops", sport: "Football", material: "Mesh", application: "Construction", image: null, tags: ["Construction", "Fabric", "Ventilation"], description: "Laser-cut ventilation zones placed along the stress map.", design: { base: "#e9eee9", trim: "#2b4c6b", pattern: "solid", sleeve: "sleeveless", collar: "crew", number: "2" } },
   { id: "heritage-hoops", title: "Heritage Hoops Kit", category: "Jerseys", sport: "Basketball", material: "Interlock", application: "Patches", image: null, tags: ["Patch", "Heritage"], description: "Hooped heritage pattern with a layered felt crest.", design: { base: "#a3342c", trim: "#e9eee9", pattern: "heritage", sleeve: "short", collar: "rib", number: "6" } },
   { id: "digital-pre", title: "Digital Pre-Match Top", category: "Tops", sport: "Soccer", material: "Performance polyester", application: "Transfer application", image: null, tags: ["Transfer application", "Digital"], description: "Pixel-grid artwork on a pre-match warm-up top.", design: { base: "#1e2420", trim: "#e2ef28", pattern: "digital", sleeve: "half", collar: "v", number: "21" } },
+
+  // ---- Rose Vein colorways (signature artwork 01) ------------------------
+  // The purple / gold heritage colorway is excluded per direction; these
+  // three studies carry the rose vein artwork in its other moods. Renders
+  // here are parametric colorway studies until artwork photography lands.
+
+  { id: "rose-obsidian", title: "Rose Vein · Obsidian", category: "Jerseys", sport: "Football", material: "Performance polyester", application: "Sublimation", image: null, tags: ["Sublimation", "Rose Vein", "Artwork"], description: "Black body, crimson hem band, crimson roses with silver veins. Stand collar. Night match, alternate kit.", design: { base: "#141619", trim: "#a3342c", pattern: "solid", sleeve: "long", collar: "stand", number: "11" } },
+  { id: "rose-ivory", title: "Rose Vein · Ivory Bloom", category: "Jerseys", sport: "Soccer", material: "Performance polyester", application: "Sublimation", image: null, tags: ["Sublimation", "Rose Vein", "Artwork"], description: "Ivory body with petals across the front, blush roses and sage leaves. V-neck with blush trim. Heritage, ceremony, supporter.", design: { base: "#eae3d5", trim: "#d8a7a0", pattern: "solid", sleeve: "long", collar: "v", number: "11" } },
+  { id: "rose-glacier", title: "Rose Vein · Glacier", category: "Jerseys", sport: "Football", material: "Performance polyester", application: "Sublimation", image: null, tags: ["Sublimation", "Rose Vein", "Gradient"], description: "Teal-to-navy body with topographic lines and ice-white roses. Polo collar, ice tipped. Winter training, keeper.", design: { base: "#2f6d80", trim: "#e9eee9", pattern: "topographic", sleeve: "long", collar: "polo", number: "11", gradientStops: ["#2f6d80", "#2b4c6b", "#141c30"] } },
+
+  // ---- Gradient series (capability 01 + 11) --------------------------------
+
+  { id: "grad-glacier", title: "Glacier · Crackle Stone", category: "Jerseys", sport: "Football", material: "Performance polyester", application: "Sublimation", image: null, tags: ["Sublimation", "Gradient", "Pattern"], description: "Teal to royal to midnight with a crackle stone overlay. Full sublimation on performance polyester.", design: { base: "#2f6d80", trim: "#e9eee9", pattern: gradientPattern.glacier, sleeve: "short", collar: "crew", number: "11", gradientStops: gradientPresets[0].stops } },
+  { id: "grad-ember", title: "Ember · Halftone Fade", category: "Jerseys", sport: "Soccer", material: "Performance polyester", application: "Sublimation", image: null, tags: ["Sublimation", "Gradient", "Pattern"], description: "Amber to vermilion to oxblood with a halftone fade overlay. Full sublimation on performance polyester.", design: { base: "#e0a53c", trim: "#1e2420", pattern: gradientPattern.ember, sleeve: "short", collar: "crew", number: "9", gradientStops: gradientPresets[1].stops } },
+  { id: "grad-alpenglow", title: "Alpenglow · Topographic", category: "Jerseys", sport: "Running", material: "Performance polyester", application: "Sublimation", image: null, tags: ["Sublimation", "Gradient", "Topographic"], description: "Blush to magenta to violet over summit contour lines. Full sublimation on performance polyester.", design: { base: "#e8b4c0", trim: "#1e2420", pattern: gradientPattern.alpenglow, sleeve: "short", collar: "v", number: "7", gradientStops: gradientPresets[2].stops } },
+  { id: "grad-night", title: "Night Ascent · Pinstripe", category: "Jerseys", sport: "Basketball", material: "Performance polyester", application: "Sublimation", image: null, tags: ["Sublimation", "Gradient", "Stripe"], description: "Slate to navy to black with a fine pinstripe overlay. Full sublimation on performance polyester.", design: { base: "#8d9790", trim: "#e9eee9", pattern: gradientPattern["night-ascent"], sleeve: "short", collar: "crew", number: "3", gradientStops: gradientPresets[3].stops } },
+  { id: "grad-moss", title: "Moss Ridge · Pixel Dissolve", category: "Jerseys", sport: "Running", material: "Performance polyester", application: "Sublimation", image: null, tags: ["Sublimation", "Gradient", "Digital"], description: "Lime to moss to forest dissolving into a pixel field. Full sublimation on performance polyester.", design: { base: "#c8e04a", trim: "#1e2420", pattern: gradientPattern["moss-ridge"], sleeve: "short", collar: "crew", number: "21", gradientStops: gradientPresets[4].stops } },
+  { id: "grad-solar", title: "Solar · Shard Field", category: "Jerseys", sport: "Volleyball", material: "Performance polyester", application: "Sublimation", image: null, tags: ["Sublimation", "Gradient", "Geometric"], description: "Lemon to tangerine on a diagonal, over a shard field. Full sublimation on performance polyester.", design: { base: "#f4e04d", trim: "#1e2420", pattern: gradientPattern.solar, sleeve: "short", collar: "crew", number: "6", gradientStops: gradientPresets[5].stops } },
+
+  // ---- Cotton line (off-field) ----------------------------------------------
+
+  { id: "cotton-summit", title: "Cotton · Summit Halftone", category: "Tops", sport: "Cricket", material: "Cotton", application: "Screen printing", image: null, tags: ["Print", "Cotton", "Halftone"], description: "Heavyweight black cotton, two-color screen print with a halftone peak and distressed finish. MEC mark, top right.", design: { base: "#16181a", trim: "#e9eee9", pattern: "digital", sleeve: "short", collar: "crew", number: "11" } },
+  { id: "cotton-topo", title: "Cotton · Topo Crest", category: "Tops", sport: "Soccer", material: "Cotton / poly blend", application: "Screen printing", image: null, tags: ["Print", "Cotton", "Topographic"], description: "Heather grey cotton / poly, one-color screen print with a contour badge and shoulder topo. Club wordmark on the back.", design: { base: "#b9bfb9", trim: "#2b4c6b", pattern: "topographic", sleeve: "short", collar: "crew", number: "02" } },
+  { id: "cotton-vintage", title: "Cotton · Vintage Club", category: "Tops", sport: "Athleisure", material: "Cotton", application: "Screen printing", image: null, tags: ["Print", "Cotton", "Heritage"], description: "Cream midweight cotton with a cracked screen print: arched varsity and worn number. Navy rib collar.", design: { base: "#e8e0cc", trim: "#22344d", pattern: "heritage", sleeve: "short", collar: "rib", number: "47" } },
+  { id: "cotton-rose", title: "Cotton · Rose Line", category: "Tops", sport: "Athleisure", material: "Cotton", application: "Transfer application", image: null, tags: ["Transfer application", "Cotton", "Rose Vein"], description: "Washed charcoal cotton with a full-color transfer: sleeve vine and back bloom. Pairs with the Obsidian Rose jersey.", design: { base: "#3a3d40", trim: "#e8b4c0", pattern: "solid", sleeve: "long", collar: "crew", number: "11" } },
 ];

@@ -3,7 +3,7 @@ import type { CollarId, PatternId, Placement, SleeveId } from "@/data/customize"
 
 // Parametric garment used across the Customize experience.
 // One SVG source of truth so previews, diagrams, the builder and the
-// gallery stay consistent — and real photography can replace any
+// gallery stay consistent, and real photography can replace any
 // instance later without touching the surrounding page.
 
 const BODY = "M82 16 C94 8 126 8 138 16 L162 34 L170 62 L170 210 C170 224 158 235 110 235 C62 235 50 224 50 210 L50 62 L58 34 Z";
@@ -78,9 +78,11 @@ type JerseySvgProps = {
   onHotspot?: (id: string) => void;
   className?: string;
   ariaLabel?: string;
+  // Vertical three-stop body fade for the gradient series.
+  gradientStops?: [string, string, string];
 };
 
-function PatternDefs({ uid }: { uid: string }) {
+function PatternDefs({ uid, gradientStops }: { uid: string; gradientStops?: [string, string, string] }) {
   return (
     <defs>
       <linearGradient id={`${uid}-shade`} x1="0" y1="0" x2="0" y2="1">
@@ -92,6 +94,13 @@ function PatternDefs({ uid }: { uid: string }) {
         <stop offset="0%" stopColor="#fff" stopOpacity="0.3" />
         <stop offset="100%" stopColor="#000" stopOpacity="0.22" />
       </linearGradient>
+      {gradientStops && (
+        <linearGradient id={`${uid}-fade`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={gradientStops[0]} />
+          <stop offset="50%" stopColor={gradientStops[1]} />
+          <stop offset="100%" stopColor={gradientStops[2]} />
+        </linearGradient>
+      )}
       <pattern id={`${uid}-stripe`} width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
         <rect width="24" height="24" fill="none" />
         <rect width="10" height="24" fill="#fff" opacity="0.16" />
@@ -139,13 +148,16 @@ export default function JerseySvg({
   onHotspot,
   className,
   ariaLabel = "MEC garment preview",
+  gradientStops,
 }: JerseySvgProps) {
   const uid = useId().replace(/:/g, "");
   const leftLen = sleeve === "custom" ? SLEEVE_LENGTH.short : SLEEVE_LENGTH[sleeve];
   const rightLen = SLEEVE_LENGTH[sleeve];
   const hasSleeves = leftLen > 0 || rightLen > 0;
-  const patternFill =
-    pattern === "solid" ? null : pattern === "gradient" ? `url(#${uid}-grad)` : pattern === "custom" ? null : `url(#${uid}-${pattern})`;
+  // A three-stop body fade when the gradient series provides one; the
+  // soft two-tone overlay keeps gradient swatches without explicit stops.
+  const fadeFill = pattern === "gradient" ? (gradientStops ? `url(#${uid}-fade)` : `url(#${uid}-grad)`) : null;
+  const overlayFill = pattern !== "solid" && pattern !== "gradient" && pattern !== "custom" ? `url(#${uid}-${pattern})` : null;
   const markFill = isLight(trim) ? "#19201b" : "#e9eee9";
 
   return (
@@ -156,7 +168,7 @@ export default function JerseySvg({
       aria-label={ariaLabel}
       preserveAspectRatio="xMidYMid meet"
     >
-      <PatternDefs uid={uid} />
+      <PatternDefs uid={uid} gradientStops={gradientStops} />
       <mask id={`${uid}-mask`}>
         <path d={BODY} fill="#fff" />
         <path d={NECK[collar]} fill="#000" />
@@ -169,12 +181,14 @@ export default function JerseySvg({
           {leftLen > 0 && (
             <>
               <path d={leftSleeve(leftLen)} fill={base} stroke="rgba(25,32,27,0.18)" strokeWidth="1" />
+              {fadeFill && <path d={leftSleeve(leftLen)} fill={fadeFill} />}
               <path d={leftSleeve(leftLen)} fill={`url(#${uid}-shade)`} />
             </>
           )}
           {rightLen > 0 && (
             <>
               <path d={rightSleeve(rightLen)} fill={base} stroke="rgba(25,32,27,0.18)" strokeWidth="1" />
+              {fadeFill && <path d={rightSleeve(rightLen)} fill={fadeFill} />}
               <path d={rightSleeve(rightLen)} fill={`url(#${uid}-shade)`} />
             </>
           )}
@@ -189,7 +203,8 @@ export default function JerseySvg({
 
       <g mask={`url(#${uid}-mask)`}>
         <path d={BODY} fill={base} stroke="rgba(25,32,27,0.18)" strokeWidth="1" />
-        {patternFill && <path d={BODY} fill={patternFill} />}
+        {fadeFill && <path d={BODY} fill={fadeFill} />}
+        {overlayFill && <path d={BODY} fill={overlayFill} />}
         <path d={BODY} fill={`url(#${uid}-shade)`} />
         {pattern === "custom" && !zoom && (
           <g transform="translate(110 118)">

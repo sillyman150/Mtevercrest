@@ -1,6 +1,11 @@
 // Manifest of the photography and assets the Customize page still needs.
-// status: "placeholder" — currently shown as an SVG/CSS placeholder.
-//         "planned"   — slot is designed, asset not yet requested.
+// status: "placeholder": currently shown as an SVG/CSS placeholder.
+//         "planned":   slot is designed, asset not yet requested.
+//         "delivered": real asset in place; deliveredPath points at it.
+//
+// Delivered so far:
+//  - "From the bench" production pieces: /public/images/from-the-bench/
+//    (seven transparent garment renders, listed in src/data/archive.ts)
 // When a real asset is produced, drop it into /public/images/customize/<folder>/
 // and update the matching data entry to point at it.
 
@@ -9,7 +14,8 @@ export type CustomizationAsset = {
   suggestedShot: string;
   aspectRatio: string;
   usage: string;
-  status: "placeholder" | "planned";
+  status: "placeholder" | "planned" | "delivered";
+  deliveredPath?: string;
 };
 
 export const customizationAssets: CustomizationAsset[] = [
@@ -31,7 +37,7 @@ export const customizationAssets: CustomizationAsset[] = [
   { assetName: "texture-perforated-01", suggestedShot: "Laser perforation pattern macro", aspectRatio: "1:1", usage: "Texture section tile", status: "placeholder" },
   { assetName: "construction-seams-01", suggestedShot: "Inside-out jersey showing flatlock seams", aspectRatio: "4:5", usage: "Construction section", status: "planned" },
   { assetName: "construction-panels-01", suggestedShot: "Exploded panel layout on cutting table", aspectRatio: "4:5", usage: "Construction section", status: "planned" },
-  { assetName: "example-gallery-01", suggestedShot: "Full kit on studio background, frontal view", aspectRatio: "4:5", usage: "What's possible gallery", status: "planned" },
-  { assetName: "example-gallery-02", suggestedShot: "Detail crop of kit identity elements", aspectRatio: "4:5", usage: "What's possible gallery", status: "planned" },
+  { assetName: "example-gallery-01", suggestedShot: "Full kit on studio background, frontal view", aspectRatio: "4:5", usage: "What's possible gallery", status: "delivered", deliveredPath: "/images/from-the-bench/gaa-navy-red.webp" },
+  { assetName: "example-gallery-02", suggestedShot: "Detail crop of kit identity elements", aspectRatio: "4:5", usage: "What's possible gallery", status: "delivered", deliveredPath: "/images/from-the-bench/strasbourg-front.webp" },
   { assetName: "hero-customize-01", suggestedShot: "Athlete wearing custom kit, dramatic side light", aspectRatio: "16:9", usage: "Customize hero background", status: "planned" },
 ];
