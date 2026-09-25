@@ -65,27 +65,6 @@ export const collars: { id: CollarId; name: string; note: string }[] = [
   { id: "custom", name: "Custom collar", note: "Shape, color, material, trim" },
 ];
 
-export const hoods = [
-  { id: "none", name: "No hood", note: "Clean neckline" },
-  { id: "standard", name: "Standard hood", note: "Classic off-field build" },
-  { id: "performance", name: "Performance hood", note: "Cut for movement" },
-  { id: "contrast", name: "Contrast hood", note: "Color-blocked interior" },
-  { id: "custom", name: "Custom hood construction", note: "Talk to Crest Studio" },
-];
-
-export const constructionFeatures = [
-  { name: "Panel layout", note: "Panel shapes tuned per silhouette." },
-  { name: "Seam placement", note: "Seams positioned for fit and strength." },
-  { name: "Reinforced stress areas", note: "Extra structure where garments work hardest." },
-  { name: "Contrast stitching", note: "Stitch color used as a design element." },
-  { name: "Flatlock-style construction", note: "Low-profile seams for next-to-skin comfort." },
-  { name: "Custom panel shapes", note: "Non-standard blocking for unique kits." },
-  { name: "Side panels", note: "Contrast or tonal body inserts." },
-  { name: "Shoulder panels", note: "Structured shoulder construction." },
-  { name: "Ventilation panels", note: "Open zones placed for airflow." },
-  { name: "Trim placement", note: "Collar, cuff and hem finishing." },
-];
-
 export const applications = [
   { id: "sublimation", name: "Sublimation", visual: "sublimation", description: "Full-garment graphics integrated into compatible performance fabrics.", ideal: "All-over patterns / team kits" },
   { id: "embroidery", name: "Embroidery", visual: "embroidery", description: "Dimensional thread-based finishing for crests, logos and premium detail work.", ideal: "Crests / polo marks" },
@@ -141,17 +120,6 @@ export const placementsBack: Placement[] = [
 ];
 
 export const personalizationFields = ["Player name", "Player number", "Team name", "Position", "Sponsor", "Crest", "Secondary marks"];
-
-export const buildSteps = [
-  { index: "01", title: "Choose garment", key: "garment" },
-  { index: "02", title: "Choose construction", key: "construction" },
-  { index: "03", title: "Choose material", key: "material" },
-  { index: "04", title: "Choose color", key: "color" },
-  { index: "05", title: "Choose artwork", key: "artwork" },
-  { index: "06", title: "Add logos", key: "logos" },
-  { index: "07", title: "Add personalization", key: "personalization" },
-  { index: "08", title: "Review", key: "review" },
-];
 
 // ---- Customization levels (Three Ways Up) --------------------------------
 // From the Crest Studio kit mockups: one jersey, three levels of build.
@@ -231,16 +199,6 @@ const gradientPattern: Record<string, PatternId> = {
   "moss-ridge": "digital",
   solar: "geometric",
 };
-
-// ---- Collar colorways ------------------------------------------------------
-// "Same polo, four collar colorways" from the collar construction page.
-
-export const collarColorways = [
-  { id: "slate-copper", name: "Slate / Copper", body: "#6b7784", trim: "#b87333" },
-  { id: "forest-cream", name: "Forest / Cream", body: "#2f4f2f", trim: "#ece3cf" },
-  { id: "wine-gold", name: "Wine / Gold", body: "#722f37", trim: "#c4b550" },
-  { id: "sky-navy", name: "Sky / Navy", body: "#a8c4dc", trim: "#22344d" },
-];
 
 export const capabilityMatrix = [
   { group: "Garment", items: ["Jerseys", "Tees", "Polos", "Hoodies", "Jackets", "Shorts", "Pants", "Warm-ups", "Sleeveless"] },

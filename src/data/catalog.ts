@@ -14,7 +14,24 @@ export const sports = [
   { name: "Basketball", detail: "Court kits / warm-ups", image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=85" },
   { name: "Volleyball", detail: "Club uniforms / layers", image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&w=1200&q=85" },
   { name: "Running", detail: "Race day / training", image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=1200&q=85" },
-  { name: "Athleisure", detail: "Off-field / everyday", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=85" },
+  { name: "Athleisure", detail: "Off-field / everyday", image: "/images/from-the-bench/athleisure.webp" },
+];
+
+// ---- Off-field range & markets (shown on the Sports page) -----------------
+// PLACEHOLDER COPY — wording is generic until MEC confirms real content.
+
+export const offFieldRange = [
+  { id: "cotton-tee", name: "Cotton t-shirt", note: "Everyday-weight cotton for groups that live off the field." },
+  { id: "poly-tee", name: "Polyester t-shirt", note: "Performance knit tees that move from warm-up to everyday." },
+  { id: "jacket", name: "Jacket", note: "A clean outer layer built around your identity." },
+  { id: "parka", name: "Parka", note: "Full-coverage outerwear for colder days and events." },
+  { id: "fleece", name: "Fleece", note: "Warm midlayers from training rooms to weekends." },
+];
+
+export const markets = [
+  { id: "group-events", name: "Group events", note: "PLACEHOLDER: describe how MEC dresses event groups — tournaments, tours, meet-ups." },
+  { id: "organizations", name: "Organizations", note: "PLACEHOLDER: describe organization-wide programs — staff, members, uniform needs." },
+  { id: "non-sports", name: "Non-sports clients", note: "PLACEHOLDER: describe work for clients entirely outside sport." },
 ];
 
 export const products: CatalogItem[] = [

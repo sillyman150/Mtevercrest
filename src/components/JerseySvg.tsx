@@ -71,7 +71,6 @@ type JerseySvgProps = {
   name?: string;
   mark?: string;
   view?: "front" | "back";
-  showSeams?: boolean;
   zoom?: boolean;
   hotspots?: Placement[];
   activeHotspot?: string | null;
@@ -141,7 +140,6 @@ export default function JerseySvg({
   name,
   mark = "MEC",
   view = "front",
-  showSeams = false,
   zoom = false,
   hotspots,
   activeHotspot,
@@ -216,18 +214,6 @@ export default function JerseySvg({
           </g>
         )}
       </g>
-
-      {showSeams && !zoom && (
-        <g stroke="rgba(25,32,27,0.3)" strokeWidth="1" strokeDasharray="3 4" fill="none">
-          <path d="M86 20 L32 42" />
-          <path d="M134 20 L188 42" />
-          <path d="M58 34 Q54 48 50 62" />
-          <path d="M162 34 Q166 48 170 62" />
-          <path d="M50 62 L50 210" />
-          <path d="M170 62 L170 210" />
-          <path d="M50 210 Q110 222 170 210" />
-        </g>
-      )}
 
       {(collar === "polo" || collar === "stand" || collar === "contrast" || collar === "rib" || collar === "custom") && (
         <g>

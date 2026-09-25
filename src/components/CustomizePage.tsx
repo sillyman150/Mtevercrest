@@ -4,22 +4,19 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowDownRight, ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
+import Carousel from "@/components/Carousel";
 import JerseySvg from "@/components/JerseySvg";
 import { benchPieces } from "@/data/archive";
 import {
   applications,
-  buildSteps,
   capabilityMatrix,
-  collarColorways,
   collars,
-  constructionFeatures,
   customizationExamples,
   customizationLevels,
   fabrics,
   galleryCategories,
   galleryTechniques,
   garments,
-  hoods,
   levelMatrix,
   patterns,
   placementsBack,
@@ -45,9 +42,6 @@ const SWATCHES = [
 ];
 
 const SPECTRUM = ["#1e2420", "#2b4c6b", "#2f6d80", "#3c5a3a", "#c4b550", "#e2ef28", "#d9e2de", "#e9eee9", "#8d9790", "#e7664e", "#a3342c", "#5a4632", "#1e2420"];
-
-const CONSTRUCTION_OPTIONS = ["Standard construction", "Paneled construction", "Ventilation panels", "Contrast stitching", "Full custom"];
-const LOGO_OPTIONS = ["Crest only", "Crest + secondary mark", "Crest + sponsor", "Custom artwork"];
 
 function CustHead({ index, eyebrow, title, copy, dark = false }: { index: string; eyebrow: string; title: React.ReactNode; copy?: string; dark?: boolean }) {
   return (
@@ -77,17 +71,6 @@ export default function CustomizePage() {
   const [garment, setGarment] = useState(garments[0].id);
   const [placeView, setPlaceView] = useState<"front" | "back">("front");
   const [activePlacement, setActivePlacement] = useState<string | null>(null);
-  const [step, setStep] = useState(0);
-  const [build, setBuild] = useState({
-    garment: "match-jersey",
-    construction: "Standard construction",
-    material: "Performance polyester",
-    color: "#e2ef28",
-    artwork: "solid" as PatternId,
-    logos: "Crest only",
-    name: "",
-    number: "",
-  });
   const [category, setCategory] = useState<(typeof galleryCategories)[number]>("All");
   const [technique, setTechnique] = useState<(typeof galleryTechniques)[number]>("All");
   const [lightbox, setLightbox] = useState<number | null>(null);
@@ -95,7 +78,6 @@ export default function CustomizePage() {
   const [fileName, setFileName] = useState("");
 
   const update = <K extends keyof typeof design>(key: K, value: (typeof design)[K]) => setDesign((d) => ({ ...d, [key]: value }));
-  const setBuildField = <K extends keyof typeof build>(key: K, value: (typeof build)[K]) => setBuild((b) => ({ ...b, [key]: value }));
 
   const filteredExamples = useMemo(() => {
     // Real production pieces sit first in the archive, followed by
@@ -338,8 +320,8 @@ export default function CustomizePage() {
               </label>
             </div>
           </div>
-          <a className="preview-link" href="#builder">
-            Customize this jersey <ArrowRight size={16} />
+          <a className="preview-link" href="#brief">
+            Start a project with this design <ArrowRight size={16} />
           </a>
         </div>
       </section>
@@ -399,7 +381,7 @@ export default function CustomizePage() {
           title={<>Choose<br /><em>the feel.</em></>}
           copy="The hand of the fabric changes the whole garment. MEC works across a range of constructions, each one selected for how it performs."
         />
-        <div className="fabric-grid">
+        <Carousel className="carousel-fabrics" ariaLabel="Materials — choose the feel">
           {fabrics.map((fabric) => (
             <div className="fabric-card" key={fabric.id}>
               <div className={`fabric-tile f-${fabric.id}`} />
@@ -407,7 +389,7 @@ export default function CustomizePage() {
               <p>{fabric.note}</p>
             </div>
           ))}
-        </div>
+        </Carousel>
         <div className="cust-weight-block">
           <div className="cust-weight-head">
             <span className="eyebrow">Fabric weight / GSM</span>
@@ -433,148 +415,15 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 06 · SLEEVES */}
-      <section className="cust-sleeves" id="sleeves">
-        <CustHead
-          index="04"
-          eyebrow="Capability / construction"
-          title={<>Build<br /><em>the silhouette.</em></>}
-          copy="Sleeve length changes how a kit moves and how it reads from the stands. Choose a cut or spec your own."
-        />
-        <div className="cust-stage-grid">
-          <div className="cust-option-list">
-            {sleeves.map((s) => (
-              <button key={s.id} className={design.sleeve === s.id ? "selected" : ""} onClick={() => update("sleeve", s.id)}>
-                <span>{s.name}</span>
-                <small>{s.note}</small>
-                <ArrowRight size={16} />
-              </button>
-            ))}
-          </div>
-          <div className="cust-stage-panel">
-            <div key={design.sleeve} className="cust-stage-figure">
-              <JerseySvg base={design.base} trim={design.trim} pattern={design.pattern} sleeve={design.sleeve} collar={design.collar} className="cust-stage-svg" ariaLabel={`${sleeves.find((s) => s.id === design.sleeve)?.name} sleeve silhouette`} />
-            </div>
-            <span className="cust-stage-caption">Sleeve / {sleeves.find((s) => s.id === design.sleeve)?.name.toUpperCase()}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* 07 · COLLARS */}
-      <section className="cust-collars" id="collars">
-        <CustHead
-          index="05"
-          eyebrow="Capability / construction"
-          title={<>The collar,<br /><em>shaped.</em></>}
-          copy="Shape, color, material and trim. The neckline is where most of a kit&apos;s identity gets close to the player."
-        />
-        <div className="cust-stage-grid">
-          <div>
-            <div className="cust-option-list">
-              {collars.map((c) => (
-                <button key={c.id} className={design.collar === c.id ? "selected" : ""} onClick={() => update("collar", c.id)}>
-                  <span>{c.name}</span>
-                  <small>{c.note}</small>
-                  <ArrowRight size={16} />
-                </button>
-              ))}
-            </div>
-            <div className="collar-colorways">
-              <span className="colorway-label">Same polo / four collar colorways</span>
-              <div className="colorway-chips">
-                {collarColorways.map((colorway) => (
-                  <button
-                    key={colorway.id}
-                    className="colorway-chip"
-                    onClick={() => {
-                      update("base", colorway.body);
-                      update("trim", colorway.trim);
-                    }}
-                    aria-label={`Apply ${colorway.name} colorway`}
-                  >
-                    <i style={{ background: colorway.body }} />
-                    <i style={{ background: colorway.trim }} />
-                    <span>{colorway.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="cust-stage-panel">
-            <div key={design.collar} className="cust-stage-figure cust-stage-zoom">
-              <JerseySvg base={design.base} trim={design.trim} collar={design.collar} zoom className="cust-stage-svg" ariaLabel={`${collars.find((c) => c.id === design.collar)?.name} neckline detail`} />
-            </div>
-            <span className="cust-stage-caption">Collar / {collars.find((c) => c.id === design.collar)?.name.toUpperCase()}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* 08 · HOODS */}
-      <section className="cust-hoods" id="hoods">
-        <CustHead
-          index="06"
-          eyebrow="Capability / construction"
-          title={<>Hood<br /><em>options.</em></>}
-          copy="Depending on the product, hoods can be built standard, performance-cut, contrast-lined or fully custom."
-        />
-        <div className="cust-hood-grid">
-          {hoods.map((hood) => (
-            <div className="hood-card" key={hood.id}>
-              <span className={`hood-figure hood-${hood.id}`}>
-                <i />
-              </span>
-              <strong>{hood.name}</strong>
-              <p>{hood.note}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 09 · CONSTRUCTION & STITCHING */}
-      <section className="cust-construction" id="construction">
-        <CustHead
-          index="07"
-          eyebrow="Capability / construction"
-          title={<>Built from<br /><em>the seams up.</em></>}
-          copy="MEC customization is not limited to graphics. Where production allows, the garment itself can be re-cut, re-paneled and re-seamed."
-        />
-        <div className="cust-construction-layout">
-          <ul className="cust-feature-list">
-            {constructionFeatures.map((feature, i) => (
-              <li key={feature.name}>
-                <span>0{i + 1}</span>
-                <strong>{feature.name}</strong>
-                <p>{feature.note}</p>
-              </li>
-            ))}
-          </ul>
-          <div className="cust-exploded">
-            <div className="exploded-layer layer-1">
-              <JerseySvg base="#d9e2de" trim="#1e2420" sleeve="short" collar="crew" showSeams className="cust-stage-svg" />
-            </div>
-            <div className="exploded-layer layer-2">
-              <JerseySvg base="#e2ef28" trim="#1e2420" sleeve="long" collar="contrast" showSeams className="cust-stage-svg" />
-            </div>
-            <div className="exploded-layer layer-3">
-              <JerseySvg base="#e7664e" trim="#e9eee9" pattern="topographic" sleeve="half" collar="rib" number="09" showSeams className="cust-stage-svg" />
-            </div>
-            <span className="exploded-label label-1">Shell</span>
-            <span className="exploded-label label-2">Seams</span>
-            <span className="exploded-label label-3">Trim</span>
-          </div>
-        </div>
-        <p className="cust-footnote">Available depending on garment type and production requirements.</p>
-      </section>
-
-      {/* 10 · DESIGN APPLICATIONS */}
+      {/* 06 · DESIGN APPLICATIONS */}
       <section className="cust-applications" id="applications">
         <CustHead
-          index="08"
+          index="04"
           eyebrow="Capability / application"
           title={<>How your design<br /><em>becomes the garment.</em></>}
           copy="The same artwork lands differently depending on how it is applied. Each method has its own feel, finish and ideal use."
         />
-        <div className="app-grid">
+        <Carousel className="carousel-applications" ariaLabel="Design applications — how your design becomes the garment">
           {applications.map((application) => (
             <article className="app-card" key={application.id}>
               <div className={`app-visual app-${application.visual}`} />
@@ -583,14 +432,14 @@ export default function CustomizePage() {
               <span className="app-ideal">Ideal for {application.ideal}</span>
             </article>
           ))}
-        </div>
+        </Carousel>
         <p className="cust-footnote">Processes shown are those MEC supports. The list lives in one data file, so options can evolve with production.</p>
       </section>
 
-      {/* 11 · LOGOS & PLACEMENT */}
+      {/* 07 · LOGOS & PLACEMENT */}
       <section className="cust-logos" id="logos">
         <CustHead
-          index="09"
+          index="05"
           eyebrow="Capability / identity"
           title={<>Make it<br /><em>yours.</em></>}
           copy="Crests, marks and sponsors can sit almost anywhere. Select a position on the garment to see where identity lands."
@@ -631,10 +480,10 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 12 · PLAYER PERSONALIZATION */}
+      {/* 08 · PLAYER PERSONALIZATION */}
       <section className="cust-personalization" id="personalization">
         <CustHead
-          index="10"
+          index="06"
           eyebrow="Capability / identity"
           title={<>The roster,<br /><em>personalized.</em></>}
           copy="Names, numbers and marks turn a kit into a roster. Set the spec and watch it land on the back of the garment."
@@ -673,28 +522,28 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 13 · PATTERNS */}
+      {/* 09 · PATTERNS */}
       <section className="cust-patterns" id="patterns">
         <CustHead
-          index="11"
+          index="07"
           eyebrow="Capability / artwork"
           title={<>From simple<br /><em>to complex.</em></>}
           copy="Original pattern families drawn in-house, from clean solids to contour work built on summit elevation data."
         />
-        <div className="pattern-grid">
+        <Carousel className="carousel-patterns" ariaLabel="Artwork patterns — from simple to complex">
           {patterns.map((pattern) => (
             <button key={pattern.id} className={design.pattern === pattern.id ? "pattern-card selected" : "pattern-card"} onClick={() => update("pattern", pattern.id)}>
               <JerseySvg base="#e2ef28" trim="#1e2420" pattern={pattern.id} sleeve="short" collar="crew" className="pattern-svg" ariaLabel={`${pattern.name} pattern`} />
               <span>{pattern.name}</span>
             </button>
           ))}
-        </div>
+        </Carousel>
       </section>
 
-      {/* 14 · TEXTURES */}
+      {/* 10 · TEXTURES */}
       <section className="cust-textures" id="textures">
         <CustHead
-          index="12"
+          index="08"
           eyebrow="Capability / detail"
           title={<>Detail you<br /><em>can feel.</em></>}
           copy="Surface texture changes everything at arm&apos;s length. Close-up studies here stand in for studio photography."
@@ -709,152 +558,10 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 15 · BUILD-A-GARMENT DEMO */}
-      <section className="cust-builder" id="builder">
-        <CustHead
-          index="13"
-          eyebrow="Crest studio / workflow"
-          title={<>Build your kit,<br /><em>step by step.</em></>}
-          copy="A working demonstration of the MEC workflow. Nothing is submitted. The final step hands the spec to Crest Studio."
-        />
-        <div className="builder-shell">
-          <ol className="builder-steps">
-            {buildSteps.map((s, i) => (
-              <li key={s.key} className={i === step ? "current" : i < step ? "done" : ""}>
-                <span>{s.index}</span>
-                {s.title}
-              </li>
-            ))}
-          </ol>
-          <div className="builder-panel">
-            <div className="builder-content">
-              {step === 0 && (
-                <div className="builder-options">
-                  {garments.map((g) => (
-                    <button key={g.id} className={build.garment === g.id ? "chip selected" : "chip"} onClick={() => setBuildField("garment", g.id)}>
-                      {g.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {step === 1 && (
-                <div className="builder-options">
-                  {CONSTRUCTION_OPTIONS.map((option) => (
-                    <button key={option} className={build.construction === option ? "chip selected" : "chip"} onClick={() => setBuildField("construction", option)}>
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {step === 2 && (
-                <div className="builder-options">
-                  {fabrics.map((fabric) => (
-                    <button key={fabric.id} className={build.material === fabric.name ? "chip selected" : "chip"} onClick={() => setBuildField("material", fabric.name)}>
-                      {fabric.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {step === 3 && (
-                <div className="builder-options">
-                  {SWATCHES.map((swatch) => (
-                    <button
-                      key={swatch.hex}
-                      className={build.color === swatch.hex ? "builder-swatch selected" : "builder-swatch"}
-                      style={{ background: swatch.hex }}
-                      aria-label={swatch.name}
-                      onClick={() => setBuildField("color", swatch.hex)}
-                    />
-                  ))}
-                </div>
-              )}
-              {step === 4 && (
-                <div className="builder-options">
-                  {patterns.map((pattern) => (
-                    <button key={pattern.id} className={build.artwork === pattern.id ? "chip selected" : "chip"} onClick={() => setBuildField("artwork", pattern.id)}>
-                      {pattern.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {step === 5 && (
-                <div className="builder-options">
-                  {LOGO_OPTIONS.map((option) => (
-                    <button key={option} className={build.logos === option ? "chip selected" : "chip"} onClick={() => setBuildField("logos", option)}>
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {step === 6 && (
-                <div className="builder-inputs">
-                  <label>
-                    Player name
-                    <input value={build.name} onChange={(event) => setBuildField("name", event.target.value.toUpperCase().slice(0, 14))} placeholder="SURNAME" />
-                  </label>
-                  <label>
-                    Player number
-                    <input value={build.number} onChange={(event) => setBuildField("number", event.target.value.replace(/\D/g, "").slice(0, 2))} placeholder="11" inputMode="numeric" />
-                  </label>
-                </div>
-              )}
-              {step === 7 && (
-                <dl className="builder-review">
-                  {[
-                    ["Garment", garments.find((g) => g.id === build.garment)?.name],
-                    ["Construction", build.construction],
-                    ["Material", build.material],
-                    ["Color", SWATCHES.find((s) => s.hex === build.color)?.name],
-                    ["Artwork", patterns.find((p) => p.id === build.artwork)?.name],
-                    ["Logos", build.logos],
-                    ["Name", build.name || "Not set"],
-                    ["Number", build.number || "Not set"],
-                  ].map(([label, value]) => (
-                    <div key={label}>
-                      <dt>{label}</dt>
-                      <dd>{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
-            </div>
-            <div className="builder-preview">
-              <JerseySvg
-                base={build.color}
-                trim="#1e2420"
-                pattern={build.artwork}
-                sleeve="short"
-                collar="crew"
-                number={build.number || "00"}
-                name={build.name}
-                view="back"
-                className="cust-stage-svg"
-                ariaLabel="Builder preview"
-              />
-              <span>{buildSteps[step].index} / 08 · {buildSteps[step].title}</span>
-            </div>
-            <div className="builder-nav">
-              <button className="builder-back" disabled={step === 0} onClick={() => setStep(step - 1)}>
-                <ChevronLeft size={15} /> Back
-              </button>
-              {step < 7 ? (
-                <button className="builder-next" onClick={() => setStep(step + 1)}>
-                  Next <ChevronRight size={15} />
-                </button>
-              ) : (
-                <a className="button button-lime" href="#brief">
-                  Start my project <ArrowRight size={16} />
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 16 · GALLERY */}
+      {/* 11 · GALLERY */}
       <section className="cust-gallery" id="gallery">
         <CustHead
-          index="14"
+          index="09"
           eyebrow="Crest studio / archive"
           title={<>What&apos;s<br /><em>possible.</em></>}
           copy="Real production pieces from the bench, photographed in the studio, plus studies from the drawing board. The archive grows as new pieces ship."
@@ -919,10 +626,10 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 17 · CAPABILITY MATRIX */}
+      {/* 12 · CAPABILITY MATRIX */}
       <section className="cust-matrix" id="matrix">
         <CustHead
-          index="15"
+          index="10"
           eyebrow="Capability / index"
           title={<>The<br /><em>possibilities.</em></>}
           copy="One index of everything the studio can shape. The short version of what Crest Studio works through with you."
@@ -941,7 +648,7 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 18 · CLOSING CTA */}
+      {/* 13 · CLOSING CTA */}
       <section className="cust-imagine" id="imagine">
         <span className="eyebrow lime">Crest studio / projects</span>
         <h2>
@@ -960,10 +667,10 @@ export default function CustomizePage() {
         </div>
       </section>
 
-      {/* 19 · PROJECT BRIEF FORM */}
+      {/* 14 · PROJECT BRIEF FORM */}
       <section className="cust-brief" id="brief">
         <CustHead
-          index="16"
+          index="11"
           eyebrow="Crest studio / intake"
           title={<>Start a<br /><em>custom project.</em></>}
           copy="A creative project brief, not a contact form. Tell us where the team is headed and the studio will work through what&apos;s possible."

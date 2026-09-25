@@ -126,13 +126,16 @@ export default function Header() {
                     if (!event.currentTarget.contains(event.relatedTarget as Node)) closeSports();
                   }}
                 >
-                  <button
+                  <Link
+                    href="/sports"
+                    className={isActive("/sports") ? "active-nav" : ""}
+                    aria-current={isActive("/sports") ? "page" : undefined}
                     aria-expanded={sportsOpen}
                     aria-haspopup="true"
-                    onClick={() => (sportsOpen ? closeSports() : openSports())}
+                    onClick={closeSports}
                   >
                     {item.label} <ChevronDown size={14} />
-                  </button>
+                  </Link>
                   {sportsOpen && (
                     <div className="sports-dropdown" aria-label="Sports">
                       <span className="eyebrow">Choose your arena</span>
